@@ -1,11 +1,12 @@
-import { ReactNode } from "react";
+import { ReactNode, ReactChild } from "react";
 
 interface SidebarItem {
-    label?: string,
+    label?: ReactChild,
     icon?: ReactNode,
     action?: Function,
     itemType?: "divider" | "item" | "title",
     isActive?: boolean,
+    activeClass?: string
 }
 interface SidebarProps {
     sidebarData: SidebarItem[],
@@ -20,18 +21,18 @@ const Divider = () => {
     )
 }
 
-const Item = ({label, icon, action, isActive}:SidebarItem) => {
+const Item = ({ label, icon, action, isActive }: SidebarItem) => {
     return (
-        <div onClick={() => {if(action) action()}} className={!isActive ? "flex p-2 text-gray-500 font-semibold items-center hover:bg-slate-200 text-sm transition-colors rounded my-1" : "flex p-2 text-gray-700 font-semibold items-center bg-slate-200 text-sm transition-colors rounded my-1"}>
-            <span className="mx-1">{icon}</span> 
+        <div onClick={() => { if (action) action() }} className={!isActive ? "flex p-2 text-gray-500 font-semibold items-center hover:bg-slate-200 dark:hover:bg-neutral-600 text-sm transition-colors rounded my-1 dark:text-gray-300" : "flex p-2 text-gray-700 font-semibold items-center bg-slate-200 dark:bg-neutral-600 text-sm transition-colors rounded my-1 dark:text-gray-300"}>
+            <span className="mx-1">{icon}</span>
             <span>
-            {label}
+                {label}
             </span>
         </div>
     )
 }
 
-const Title = ({label}: SidebarItem) => {
+const Title = ({ label }: SidebarItem) => {
     return (
         <h3>
             {label}
@@ -39,30 +40,25 @@ const Title = ({label}: SidebarItem) => {
     )
 }
 
-export default function Sidebar({sidebarData, isOpen}: SidebarProps) {
+export default function Sidebar({ sidebarData, isOpen }: SidebarProps) {
 
     const dataRender = sidebarData.map((item, index) => (
         <li key={index} className="cursor-pointer min-w-[12rem]">
             {item.itemType === "divider" && <Divider />}
-            {item.itemType === "item" && <Item label={item.label} icon={item.icon} action={item.action} />}
+            {item.itemType === "item" && <Item label={item.label} icon={item.icon} action={item.action} isActive={item.isActive} />}
             {item.itemType === "title" && <Title label={item.label} />}
         </li>
     ))
 
-    if (isOpen) {
-        return (
-            <div className="bg-slate-100 py-3 px-2 w-1/5 min-w-max">
+    return (
+        <div className={isOpen ? "bg-slate-100 py-3 px-2 w-1/5 min-w-max h-screen shadow border-r-2 dark:border-0 transition-all dark:bg-neutral-700" : "w-0 hidden h-screen shadow border-r-2 transition-all"}>
             <section>
                 <ul>
-                {dataRender}
+                    {dataRender}
                 </ul>
             </section>
-            </div>
-        )
-    }
-    else {
-        return (<></>)
-    }
+        </div>
+    )
 }
 
-export type {SidebarItem};
+export type { SidebarItem };

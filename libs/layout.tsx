@@ -1,79 +1,49 @@
-import { ReactNode, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 
 // Imports to be moved from this file
 import AppHeader from "./components/AppHeader"
-import Sidebar from "./components/Sidebar"
 import MenuImage from "../assets/menu (2).png"
 import Image from "next/image"
-import { SidebarItem } from "./components/Sidebar"
-import { ChartBarIcon, CollectionIcon, CogIcon, MoonIcon, InformationCircleIcon, UserIcon } from "@heroicons/react/outline"
-
+import AppSidebar from "./components/AppSidebar"
+import { useRouter } from "next/router"
 
 // TODO: To move all the sidebar logic and other components
 // from layout to another wrapper component
 
-let sidebarTemplateData: SidebarItem[] = [
-    {
-        itemType: "item",
-        label: "Shelf",
-        icon: <CollectionIcon className="w-5 h-5 text-gray-500" />,
-        isActive: true,
-    },
-    {
-        itemType: "item",
-        label: "Dashboard",
-        icon: <ChartBarIcon className="w-5 h-5 text-gray-500" />,
-    },
-    {
-        itemType: "item",
-        label: "Settings",
-        icon: <CogIcon className="w-5 h-5 text-gray-500" />,
-    },
-    {
-        itemType: 'divider'
-    },
-    {
-        itemType: "item",
-        label: "Theme",
-        icon: <MoonIcon className="w-5 h-5 text-gray-500" />,
-    },
-    {
-        itemType: "item",
-        label: "Account",
-        icon: <UserIcon className="w-5 h-5 text-gray-500" />
-    },
-    {
-        itemType: "item",
-        label: "About",
-        icon: <InformationCircleIcon className="w-5 h-5 text-gray-500" />
-    }
-]
 
 function AppLogo() {
     return (
-        <div className="font-semibold text-gray-700 flex items-center text-lg">
+        <div className="font-semibold text-gray-700 flex items-center text-lg dark:text-slate-300">
             <Image src={MenuImage} alt="" />
             <span className="mx-1">
-                Shelf
+                Projects
             </span>
         </div>
     )
 }
 
-export default function Layout({ children }: { children: ReactNode }) {
-    const [sidebarState, setSidebar] = useState(false)
+export default function Layout({ children, currentTheme, toggleTheme }: { children: ReactNode, currentTheme: "light" | "dark", toggleTheme: Function }) {
 
+    // routing based on auth state
+    const router = useRouter()
+
+    // sidebar logic
+    const [sidebarState, setSidebar] = useState(false)
     function toggleSidebar() {
         setSidebar(!sidebarState)
     }
 
     return (
-        <div className="bg-gray-300 h-screen w-screen">
-            <div className="flex">
-            <Sidebar sidebarData={sidebarTemplateData} isOpen={sidebarState}></Sidebar>
-            <AppHeader sidebarToggleHandler={() => toggleSidebar()} appLogo={<AppLogo />}></AppHeader>
+        <div className={currentTheme}>
+            <div className="bg-gray-300 h-screen w-screen dark:bg-neutral-800">
+                <div className="flex">
+                    <AppSidebar currentTheme={currentTheme} toggleTheme={toggleTheme} sidebarState={sidebarState} />
+                    <div className="w-full">
+                        <AppHeader sidebarToggleHandler={() => toggleSidebar()} appLogo={<AppLogo />}></AppHeader>
+                        {children}
+                    </div>
+                </div>
             </div>
-            {children}
         </div>
     )
 }
